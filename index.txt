@@ -1,0 +1,51 @@
+<?php
+include('connect.php');
+$data_barang = mysqli_query($connect,"SELECT produk FROM penjualan GROUP BY produk");
+$penjualan = mysqli_query($connect,"SELECT SUM(jumlah) AS sold FROM penjualan GROUP BY produk");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafik Penjualan</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/Chart.js" type="text/javascript"></script>
+</head>
+<body>
+
+    <h1>Grafik Penjualan</h1>
+    <center>
+<canvas id="penjualan"></canvas>
+    </center>
+<script>
+var ctx = document.getElementById("penjualan").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: [<?php while($row = mysqli_fetch_array($data_barang)) {echo '"'.$row['produk']. '",';}?>],
+        datasets: 
+        [
+            {
+                label: '# jumlah',
+                data: [<?php while($row = mysqli_fetch_array($penjualan)) {echo '"'.$row['sold']. '",';}?>],
+                backgroundColor: ['#7FFFD4', '#17BEBB', '#FFC914','#7FFF00','#FAEBD7','#008000','#17BEBB'],
+                borderWidth: 2
+            }
+        ]
+    },
+options: {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero:true
+            }
+        }]
+        }
+    }
+});
+</script>
+
+</body>
+</html>
